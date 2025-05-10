@@ -1,6 +1,9 @@
 package com.globsest.testworkcreditcards.dto;
 
+import lombok.Data;
 import org.antlr.v4.runtime.misc.NotNull;
-
-public record CreateCardRequest(@NotNull Long userId) {
+@Data
+public class CreateCardRequest {
+    @NotNull
+    private Long userId;
 }

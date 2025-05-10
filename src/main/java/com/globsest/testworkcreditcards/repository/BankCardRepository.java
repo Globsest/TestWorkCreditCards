@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BankCardRepository extends JpaRepository<BankCard,Long> {
+    Page<BankCard> findByUserId(Long userId, Pageable pageable);
 }
