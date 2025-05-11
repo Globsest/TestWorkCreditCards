@@ -51,7 +51,7 @@ public class CardNumberGenerator {
     }
 
     public String maskCardNumber(String cardNumber) {
-        return cardNumber.substring(0, 4) + " **** **** " + cardNumber.substring(12);
+        return cardNumber + " **** " + " **** **** " + cardNumber.substring(12);
     }
 
 }

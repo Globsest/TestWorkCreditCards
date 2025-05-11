@@ -20,6 +20,7 @@ public class BankCard {
     private String card_number_encrypted;
     private String card_number_masked;
     private String expiration_date;
+    @Enumerated(EnumType.STRING)
     private CardStatus status;
     private BigDecimal balance;
     @ManyToOne(fetch = FetchType.LAZY)

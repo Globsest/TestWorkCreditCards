@@ -70,7 +70,7 @@ public class SecurityController {
         user.setFirstName(registerRequest.getFirstName());
         user.setLastName(registerRequest.getLastName());
         user.setMiddleName(registerRequest.getMiddleName());
-        user.setRole(registerRequest.getRole()); // Убедитесь, что role не null
+        user.setRole(registerRequest.getRole());
         user.setActive(true);
 
         userRepository.save(user);
