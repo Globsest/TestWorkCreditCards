@@ -1,5 +1,6 @@
 package com.globsest.testworkcreditcards.service;
 
+import com.globsest.testworkcreditcards.dto.UserDetailsImpl;
 import com.globsest.testworkcreditcards.entity.User;
 import com.globsest.testworkcreditcards.repository.UserRepository;
 import lombok.Data;

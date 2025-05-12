@@ -1,17 +1,13 @@
-package com.globsest.testworkcreditcards.service;
+package com.globsest.testworkcreditcards.dto;
 
 import com.globsest.testworkcreditcards.entity.Role;
 import com.globsest.testworkcreditcards.entity.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor

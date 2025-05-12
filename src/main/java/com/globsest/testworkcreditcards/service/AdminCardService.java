@@ -1,7 +1,6 @@
 package com.globsest.testworkcreditcards.service;
 
 
-import com.globsest.testworkcreditcards.CardNumberGenerator;
 import com.globsest.testworkcreditcards.dto.BankCardDto;
 import com.globsest.testworkcreditcards.entity.BankCard;
 import com.globsest.testworkcreditcards.entity.CardStatus;
