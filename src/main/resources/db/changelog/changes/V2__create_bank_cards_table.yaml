@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: glebd
+      changes:
+        - createTable:
+            tableName: bank_card
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_bankcard
+              - column:
+                  name: card_number_encrypted
+                  type: VARCHAR(255)
+              - column:
+                  name: card_number_masked
+                  type: VARCHAR(255)
+              - column:
+                  name: expiration_date
+                  type: VARCHAR(255)
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: balance
+                  type: DECIMAL
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false

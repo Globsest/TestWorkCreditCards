@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: glebd
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: bank_card
+            baseColumnNames: user_id
+            constraintName: FK_BANKCARD_ON_USER
+            referencedTableName: users
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 5
+      author: glebd
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: transfer
+            baseColumnNames: from_card_id
+            constraintName: FK_TRANSFER_ON_FROMCARD
+            referencedTableName: bank_card
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 6
+      author: glebd
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: transfer
+            baseColumnNames: to_card_id
+            constraintName: FK_TRANSFER_ON_TOCARD
+            referencedTableName: bank_card
+            referencedColumnNames: id

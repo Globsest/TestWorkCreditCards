@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/V1__create_users_table.yaml
+  - include:
+      file: db/changelog/changes/V2__create_bank_cards_table.yaml
+  - include:
+      file: db/changelog/changes/V3__create_transfers_table.yaml
+  - include:
+      file: db/changelog/changes/V4__add_foreign_keys.yaml
