@@ -3,10 +3,8 @@ services:
     build: .
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/TestWorkCreditCards
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=1234
+    env_file:
+      - .env
     depends_on:
       - postgres
     networks:
@@ -15,9 +13,9 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=TestWorkCreditCards
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD : ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
