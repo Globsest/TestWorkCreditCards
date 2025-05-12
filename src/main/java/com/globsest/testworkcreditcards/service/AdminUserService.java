@@ -3,6 +3,7 @@ package com.globsest.testworkcreditcards.service;
 import com.globsest.testworkcreditcards.entity.CardStatus;
 import com.globsest.testworkcreditcards.entity.Role;
 import com.globsest.testworkcreditcards.entity.User;
+import com.globsest.testworkcreditcards.exceptions.UserOperationException;
 import com.globsest.testworkcreditcards.repository.BankCardRepository;
 import com.globsest.testworkcreditcards.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,10 +33,10 @@ public class AdminUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (!user.isActive()) {
-            throw new IllegalStateException("User is already blocked");
+            throw new UserOperationException("User is already blocked", "USER BLOCKED");
         }
         if (user.getRole() == Role.ADMIN) {
-            throw new UnsupportedOperationException("Cannot block ADMIN users");
+            throw new UserOperationException("Cannot block ADMIN users", "CANNOT BLOCK ADMIN");
         }
         user.setActive(false);
         bankCardRepository.blockAllCardsByUser(userId, CardStatus.BLOCKED);
@@ -46,7 +47,7 @@ public class AdminUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (user.isActive()) {
-            throw new IllegalStateException("User is already unblocked");
+            throw new UserOperationException("User is already unblocked",  "USER ALREADY UNBLOCKED");
         }
         user.setActive(true);
         return userRepository.save(user);

@@ -11,6 +11,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class AdminCardController {
     private final AdminCardService adminCardService;
 
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public BankCard createCard(@RequestBody CreateCardRequest request) {
         return adminCardService.createCardForUser(request.getUserId());
     }
@@ -38,6 +40,7 @@ public class AdminCardController {
     }
 
     @DeleteMapping("/{cardId}/delete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long cardId) throws ChangeSetPersister.NotFoundException {
         adminCardService.deleteCardUser(cardId);
     }
@@ -47,6 +50,4 @@ public class AdminCardController {
 
         return adminCardService.getAllCards(pageable);
     }
-
-
 }

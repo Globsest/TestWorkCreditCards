@@ -51,7 +51,18 @@ public class CardNumberGenerator {
     }
 
     public String maskCardNumber(String cardNumber) {
-        return cardNumber + " **** " + " **** **** " + cardNumber.substring(12);
+        if (cardNumber == null) {
+            return "**** **** **** ****";
+        }
+
+        String cleanNumber = cardNumber.replaceAll("\\s+", "");
+
+        if (cleanNumber.length() < 4 || !cleanNumber.matches("\\d+")) {
+            return "**** **** **** ****";
+        }
+
+        String lastFourDigits = cleanNumber.substring(cleanNumber.length() - 4);
+        return "**** **** **** " + lastFourDigits;
     }
 
 }

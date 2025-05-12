@@ -22,7 +22,7 @@ public class BankCard {
     private String expiration_date;
     @Enumerated(EnumType.STRING)
     private CardStatus status;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

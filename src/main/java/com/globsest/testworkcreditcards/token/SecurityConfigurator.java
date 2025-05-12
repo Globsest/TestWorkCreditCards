@@ -61,10 +61,4 @@ public class SecurityConfigurator {
         return http.build();
 
     }
-
-//    @Bean
-//    public AuthenticationManagerBuilder configureAuthenticationManagerBuilder(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
-//        return authenticationManagerBuilder;
-//    }
 }

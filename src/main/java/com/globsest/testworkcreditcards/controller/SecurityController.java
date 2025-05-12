@@ -9,11 +9,13 @@ import com.globsest.testworkcreditcards.entity.User;
 import com.globsest.testworkcreditcards.repository.UserRepository;
 import com.globsest.testworkcreditcards.service.UserService;
 import com.globsest.testworkcreditcards.token.JWTCore;
+import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,61 +61,77 @@ public class SecurityController {
 
 
     @PostMapping("/register")
-    ResponseEntity<?> register (@RequestBody RegisterRequest registerRequest) {
+    ResponseEntity<?> register (@RequestBody RegisterRequest registerRequest) throws AuthException {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            throw new AuthException("Email already exists");
         }
 
-        User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword_hash(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setFirstName(registerRequest.getFirstName());
-        user.setLastName(registerRequest.getLastName());
-        user.setMiddleName(registerRequest.getMiddleName());
-        user.setRole(registerRequest.getRole());
-        user.setActive(true);
+        try {
+            User user = new User();
+            user.setEmail(registerRequest.getEmail());
+            user.setPassword_hash(passwordEncoder.encode(registerRequest.getPassword()));
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
+            user.setMiddleName(registerRequest.getMiddleName());
+            user.setRole(registerRequest.getRole());
+            user.setActive(true);
 
-        userRepository.save(user);
-        return ResponseEntity.ok("User created successfully");
+            userRepository.save(user);
+            return ResponseEntity.ok("User created successfully");
+        } catch (Exception e) {
+            throw new AuthException("Registration failed: " + e.getMessage());
+        }
+
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws AuthException {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String accessToken = jwtCore.generateAccessToken(userDetails);
-        String refreshToken = jwtCore.generateRefreshToken(userDetails);
+            String accessToken = jwtCore.generateAccessToken(userDetails);
+            String refreshToken = jwtCore.generateRefreshToken(userDetails);
 
-        return ResponseEntity.ok(new AuthResponse(
-                accessToken,
-                refreshToken
-        ));
+            return ResponseEntity.ok(new AuthResponse(
+                    accessToken,
+                    refreshToken
+            ));
+        } catch (BadCredentialsException e) {
+            throw new AuthException("Invalid email or password");
+        } catch (Exception e) {
+            throw new AuthException("Login failed: " + e.getMessage());
+        }
+
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshRequest refreshRequest) {
+    public ResponseEntity<?> refresh(@RequestBody RefreshRequest refreshRequest) throws AuthException {
         if (!jwtCore.validateToken(refreshRequest.getRefreshToken(), true)) {
             return ResponseEntity.badRequest().body("Invalid refresh token");
         }
+        try {
+            String passport = jwtCore.getUsernameFromToken(refreshRequest.getRefreshToken(), true);
+            UserDetails userDetails = userService.loadUserByUsername(passport);
 
-        String passport = jwtCore.getUsernameFromToken(refreshRequest.getRefreshToken(), true);
-        UserDetails userDetails = userService.loadUserByUsername(passport);
+            String newAccessToken = jwtCore.generateAccessToken(userDetails);
+            String newRefreshToken = jwtCore.generateRefreshToken(userDetails);
 
-        String newAccessToken = jwtCore.generateAccessToken(userDetails);
-        String newRefreshToken = jwtCore.generateRefreshToken(userDetails);
+            return ResponseEntity.ok(new AuthResponse(
+                    newAccessToken,
+                    newRefreshToken
+            ));
+        } catch (Exception e) {
+            throw new AuthException("Token refresh failed: " + e.getMessage());
+        }
 
-        return ResponseEntity.ok(new AuthResponse(
-                newAccessToken,
-                newRefreshToken
-        ));
     }
 
     @PostMapping("/logout")

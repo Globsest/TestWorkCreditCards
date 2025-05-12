@@ -6,6 +6,8 @@ import com.globsest.testworkcreditcards.entity.BankCard;
 import com.globsest.testworkcreditcards.entity.CardStatus;
 import com.globsest.testworkcreditcards.entity.Transfer;
 import com.globsest.testworkcreditcards.entity.TransferStatus;
+import com.globsest.testworkcreditcards.exceptions.CardOperationException;
+import com.globsest.testworkcreditcards.exceptions.TransferException;
 import com.globsest.testworkcreditcards.repository.BankCardRepository;
 import com.globsest.testworkcreditcards.repository.TransferRepository;
 import com.globsest.testworkcreditcards.repository.UserRepository;
@@ -35,9 +37,11 @@ public class UserCardService {
         BankCard card = validateCardOwnership(userId, cardId);
 
         if (card.getStatus() == CardStatus.BLOCKED) {
-            throw new IllegalStateException("Card is already blocked");
+            throw new CardOperationException("Card is already blocked", "CARD_BLOCKED");
         }
-
+        if (card.getStatus() != CardStatus.ACTIVE) {
+            throw new CardOperationException("Only active cards can be blocked", "INVALID_CARD_STATUS");
+        }
         card.setStatus(CardStatus.BLOCKED);
         return cardRepository.save(card);
     }
@@ -49,9 +53,24 @@ public class UserCardService {
         if (fromCard.getId().equals(toCard.getId())) {
             throw new IllegalArgumentException("Cannot transfer to the same card");
         }
-
+        if (fromCard.getStatus() != CardStatus.ACTIVE) {
+            throw new TransferException("Source card is not active", "SOURCE_CARD_INACTIVE");
+        }
+        if (toCard.getStatus() != CardStatus.ACTIVE) {
+            throw new TransferException("Target card is not active", "TARGET_CARD_INACTIVE");
+        }
+        if (transferDto.amount() == null) {
+            throw new TransferException("Amount cannot be null", "NULL_AMOUNT");
+        }
+        if (transferDto.amount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new TransferException("Amount must be positive", "NON_POSITIVE_AMOUNT");
+        }
         if (fromCard.getBalance().compareTo(transferDto.amount()) < 0) {
-            throw new Exception("Not enough balance on source card");
+            throw new TransferException(
+                    String.format("Insufficient funds. Available: %s, requested: %s",
+                            fromCard.getBalance(), transferDto.amount()),
+                    "INSUFFICIENT_FUNDS"
+            );
         }
 
         fromCard.setBalance(fromCard.getBalance().subtract(transferDto.amount()));
