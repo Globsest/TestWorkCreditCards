@@ -9,6 +9,8 @@ import com.globsest.testworkcreditcards.entity.User;
 import com.globsest.testworkcreditcards.repository.UserRepository;
 import com.globsest.testworkcreditcards.service.UserService;
 import com.globsest.testworkcreditcards.token.JWTCore;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,14 @@ public class SecurityController {
 
 
     @PostMapping("/register")
+    @Operation(
+            summary = "Регистрация пользователя",
+            description = "Создает нового пользователя с указанной ролью",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешная регистрация"),
+                    @ApiResponse(responseCode = "400", description = "Email уже существует")
+            }
+    )
     ResponseEntity<?> register (@RequestBody RegisterRequest registerRequest) throws AuthException {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new AuthException("Email already exists");
@@ -85,6 +95,14 @@ public class SecurityController {
     }
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Вход в систему",
+            description = "Пользователь заходит в систему",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешный вход"),
+                    @ApiResponse(responseCode = "401", description = "Неверные учетные данные")
+            }
+    )
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws AuthException {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -113,6 +131,14 @@ public class SecurityController {
     }
 
     @PostMapping("/refresh")
+    @Operation(
+            summary = "Обновление токена",
+            description = "Генерирует новую пару access/refresh токенов",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Токены обновлены"),
+                    @ApiResponse(responseCode = "400", description = "Невалидный refresh-токен")
+            }
+    )
     public ResponseEntity<?> refresh(@RequestBody RefreshRequest refreshRequest) throws AuthException {
         if (!jwtCore.validateToken(refreshRequest.getRefreshToken(), true)) {
             return ResponseEntity.badRequest().body("Invalid refresh token");
