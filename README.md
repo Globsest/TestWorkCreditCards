@@ -1,10 +1,9 @@
 # 🏦 Credit Cards API
 
 ```bash
-# 1. Клонируйте репозиторий
 git clone https://github.com/yourusername/credit-cards-api.git
 
-# 2. Настройте БД (для Linux/macOS)
+Настройте БД (для Linux/macOS)
 createdb creditcards
 export DB_URL=jdbc:postgresql://localhost:5432/creditcards
 export DB_USERNAME=postgres
